@@ -111,7 +111,13 @@ export function captureIncident(
   return storeKnowledge(entry);
 }
 
-export function captureDecision(decision: DecisionData): string {
+export function captureDecision(
+  title: string,
+  chosenOption: string,
+  rejectedAlternatives: { option: string; reason: string }[],
+  tradeOffs: string,
+  agentsInvolved: ('openclaw' | 'nexus')[]
+): string {
   const entry: KnowledgeEntry<DecisionData> = {
     id: uuidv4(),
     version: 1,
@@ -119,7 +125,13 @@ export function captureDecision(decision: DecisionData): string {
     timestamp: new Date().toISOString(),
     agent: 'nexus', // Or determined dynamically
     trigger: 'manual_capture',
-    data: decision,
+    data: {
+      title,
+      chosenOption,
+      rejectedAlternatives,
+      tradeOffs,
+      agentsInvolved,
+    },
   };
   return storeKnowledge(entry);
 }

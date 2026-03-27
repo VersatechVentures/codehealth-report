@@ -10,7 +10,7 @@ import { generatePDFReport } from "./reporter";
 import { ScanJob, ScanRequest, CodeHealthReport } from "./types";
 import { initDB, saveJob as dbSaveJob, getJob as dbGetJob, saveSharedReport as dbSaveShared, getSharedReport as dbGetShared, getUserById, incrementScanCount } from "./database";
 import { registerUser, loginUser, authenticateToken, optionalAuth } from "./auth";
-import { knowledgeBaseErrorHandler, captureDecision } from './knowledge';
+import { knowledgeBaseErrorHandler } from './knowledge';
 
 const app = express();
 
@@ -80,6 +80,7 @@ function checkRateLimit(req: express.Request): { allowed: boolean; remaining: nu
 
 app.use(cors());
 app.use(express.json());
+app.use(knowledgeBaseErrorHandler);
 app.use(express.static(path.join(__dirname, "..", "public")));
 
 // ═══════════════════════════════════════════
@@ -466,11 +467,11 @@ app.use(knowledgeBaseErrorHandler);
 
 app.listen(PORT, () => {
   console.log(`\n🔬 CodeHealth Report v0.3.0 — Revenue Engine`);
-  console.log(`   Landing:  http://localhost:${PORT}/`);
-  console.log(`   Scan:     POST http://localhost:${PORT}/api/scan`);
-  console.log(`   Badge:    GET  http://localhost:${PORT}/badge/:owner/:repo`);
-  console.log(`   Share:    POST http://localhost:${PORT}/api/share/:jobId`);
-  console.log(`   Pricing:  GET  http://localhost:${PORT}/api/pricing`);
-  console.log(`   Health:   GET  http://localhost:${PORT}/api/health`);
+  console.log(`   Landing:  ${BASE_URL}/`);
+  console.log(`   Scan:     POST ${BASE_URL}/api/scan`);
+  console.log(`   Badge:    GET  ${BASE_URL}/badge/:owner/:repo`);
+  console.log(`   Share:    POST ${BASE_URL}/api/share/:jobId`);
+  console.log(`   Pricing:  GET  ${BASE_URL}/api/pricing`);
+  console.log(`   Health:   GET  ${BASE_URL}/api/health`);
   console.log(`   Free tier: ${FREE_SCAN_LIMIT} scans/month | PDF: Pro only\n`);
 });

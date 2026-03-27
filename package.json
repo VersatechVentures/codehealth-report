@@ -9,7 +9,7 @@
   },
   "keywords": ["code-health", "codebase-audit", "security-scanner", "github", "code-quality", "dependency-audit"],
   "scripts": {
-    "build": "tsc && cp -r src/templates dist/templates",
+    "build": "tsc",
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
     "test": "jest"

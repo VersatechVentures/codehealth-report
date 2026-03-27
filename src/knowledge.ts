@@ -91,6 +91,42 @@ export function captureIncident(
     version: 1,
     type: 'incident',
     timestamp: new Date().toISOString(),
+    agent: 'system', // System captures runtime errors
+    trigger: 'error_middleware',
+    data: {
+      error: {
+        message: err.message,
+        stack: err.stack,
+      },
+      request: {
+        endpoint: req.originalUrl,
+        method: req.method,
+        body: req.body,
+        headers: req.headers,
+      },
+      rootCause,
+      preventionStrategy,
+    },
+  };
+  return storeKnowledge(entry);
+}
+
+export function captureDecision(
+  title: string,
+  chosenOption: string,
+  rejectedAlternatives: { option: string; reason: string }[],
+  tradeOffs: string,
+  agentsInvolved: ('openclaw' | 'nexus')[]
+): string {
+  const entry: KnowledgeEntry<DecisionData> = {
+    id:g,
+  preventionStrategy?: string
+): string {
+  const entry: KnowledgeEntry<IncidentData> = {
+    id: uuidv4(),
+    version: 1,
+    type: 'incident',
+    timestamp: new Date().toISOString(),
     agent: 'system',
     trigger: 'error_handler',
     data: {

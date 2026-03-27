@@ -24,7 +24,12 @@ function runFile(cmd: string, args: string[], cwd: string, timeoutMs = 30000): s
 }
 
 function findFiles(cwd: string, args: string[]): string[] {
-  const output = runFile('find', ['.', ...args], cwd);
+  // Exclude the scanner's own source directory to prevent self-scanning false positives.
+  const excludedPaths = ['.git', 'node_modules', 'dist', 'src'];
+  const excludeArgs = excludedPaths.flatMap(p => ['-not', '-path', `*/${p}/*`]);
+  const finalArgs = ['.', ...excludeArgs, ...args];
+  
+  const output = runFile('find', finalArgs, cwd);
   return output.trim().split('\n').filter(Boolean);
 }
 

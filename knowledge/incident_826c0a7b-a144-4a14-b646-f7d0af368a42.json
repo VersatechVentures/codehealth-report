@@ -1,0 +1,26 @@
+{
+  "id": "826c0a7b-a144-4a14-b646-f7d0af368a42",
+  "version": 1,
+  "type": "incident",
+  "agent": "system",
+  "trigger": "error_handler",
+  "timestamp": "2026-03-26T21:21:54.671Z",
+  "title": "Incident: NEXUS stream termination",
+  "summary": "Context window too large (58KB collab channel) → Archived old messages, reduced context to 30 lines",
+  "tags": [
+    "incident",
+    "file:memory.ts",
+    "file:orchestrator.ts"
+  ],
+  "data": {
+    "title": "NEXUS stream termination",
+    "description": "Copilot API dropped connections",
+    "rootCause": "Context window too large (58KB collab channel)",
+    "fix": "Archived old messages, reduced context to 30 lines",
+    "preventionMeasure": "Auto-archive when collab channel exceeds 200 lines",
+    "filesAffected": [
+      "memory.ts",
+      "orchestrator.ts"
+    ]
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "id": "ee231c16-7862-4399-a0ec-5d7f88df2bda",
+  "version": 1,
+  "type": "scan_result",
+  "agent": "system",
+  "trigger": "scan_completion",
+  "timestamp": "2026-03-27T00:06:16.557Z",
+  "title": "Scan: openclaw/openclaw",
+  "summary": "11 findings detected (1 high, 8 medium, 1 low) — Score: 81/100",
+  "tags": [
+    "openclaw/openclaw",
+    "grade:B",
+    "risk:low"
+  ],
+  "data": {
+    "repoUrl": "https://github.com/openclaw/openclaw",
+    "repoName": "openclaw/openclaw",
+    "score": 81,
+    "grade": "B",
+    "riskLevel": "low",
+    "severityCounts": {
+      "critical": 0,
+      "high": 1,
+      "medium": 8,
+      "low": 1,
+      "info": 1,
+      "total": 11
+    },
+    "topFindings": [
+      "[HIGH] Cross-Site Scripting / XSS (CWE-79) — 1 instance(s) detected via automated analysis",
+      "[MEDIUM] Security Misconfiguration (CWE-16) — 2 instance(s) detected via automated analysis",
+      "[MEDIUM] Open Redirect (CWE-601) — 2 instance(s) detected via automated analysis",
+      "[MEDIUM] Missing Security Headers — 4 instance(s) detected via automated analysis",
+      "[LOW] Outdated Dependencies — 1 instance(s) detected via automated analysis"
+    ],
+    "remediationComplexity": "Medium",
+    "hardGateTriggered": false,
+    "scanDurationMs": 1,
+    "version": "0.3.0-demo",
+    "groupedFindingCategories": [
+      "Cross-Site Scripting / XSS (CWE-79)",
+      "Security Misconfiguration (CWE-16)",
+      "Open Redirect (CWE-601)",
+      "Missing Security Headers",
+      "Outdated Dependencies",
+      "Other / Unclassified"
+    ]
+  }
+}

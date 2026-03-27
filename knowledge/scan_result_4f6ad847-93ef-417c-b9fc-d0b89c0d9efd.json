@@ -1,0 +1,52 @@
+{
+  "id": "4f6ad847-93ef-417c-b9fc-d0b89c0d9efd",
+  "version": 1,
+  "type": "scan_result",
+  "agent": "system",
+  "trigger": "scan_completion",
+  "timestamp": "2026-03-27T02:30:37.327Z",
+  "title": "Scan: expressjs/express",
+  "summary": "19 findings detected (2 critical, 6 high, 9 medium, 1 low) — Score: 47/100",
+  "tags": [
+    "expressjs/express",
+    "grade:D",
+    "risk:high",
+    "hard-gate"
+  ],
+  "data": {
+    "repoUrl": "https://github.com/expressjs/express",
+    "repoName": "expressjs/express",
+    "score": 47,
+    "grade": "D",
+    "riskLevel": "high",
+    "severityCounts": {
+      "critical": 2,
+      "high": 6,
+      "medium": 9,
+      "low": 1,
+      "info": 1,
+      "total": 19
+    },
+    "topFindings": [
+      "[CRITICAL] Authentication Bypass (CWE-287) — 2 instance(s) detected via automated analysis",
+      "[HIGH] Cross-Site Scripting / XSS (CWE-79) — 4 instance(s) detected via automated analysis",
+      "[HIGH] Sensitive Data Exposure (CWE-200) — 2 instance(s) detected via automated analysis",
+      "[MEDIUM] Security Misconfiguration (CWE-16) — 3 instance(s) detected via automated analysis",
+      "[MEDIUM] Open Redirect (CWE-601) — 2 instance(s) detected via automated analysis"
+    ],
+    "remediationComplexity": "High",
+    "hardGateTriggered": true,
+    "scanDurationMs": 139,
+    "version": "0.3.0",
+    "groupedFindingCategories": [
+      "Authentication Bypass (CWE-287)",
+      "Cross-Site Scripting / XSS (CWE-79)",
+      "Sensitive Data Exposure (CWE-200)",
+      "Security Misconfiguration (CWE-16)",
+      "Open Redirect (CWE-601)",
+      "Missing Security Headers",
+      "License Risk",
+      "Other / Unclassified"
+    ]
+  }
+}

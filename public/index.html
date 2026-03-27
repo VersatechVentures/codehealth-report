@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeHealth — AI-Powered Codebase Audits | Versatech Ventures</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* ═══════════════════════════════════════════
+       DESIGN SYSTEM — Developer Tool / Cybersecurity SaaS
+       Source: UI/UX Pro Max + colors.csv "Developer Tool / IDE"
+       Style: Dark Mode (OLED) + Modern Dark Cinema blend
+       Typography: Inter (headings+body) + Fira Code (code)
+       ═══════════════════════════════════════════ */
+    :root {
+      /* Color tokens — Developer Tool palette */
+      --bg: #0F172A;
+      --bg-deep: #080E1E;
+      --surface: #1B2336;
+      --surface-hover: #222D44;
+      --card: #1B2336;
+      --card-hover: #1E2A42;
+      --border: rgba(71, 85, 105, 0.3);
+      --border-hover: rgba(71, 85, 105, 0.5);
+      --ring: #1E293B;
+
+      /* Text hierarchy */
+      --text-primary: #F8FAFC;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+
+      /* Brand colors */
+      --primary: #6366F1;       /* Indigo — trust, tech */
+      --primary-light: #818CF8;
+      --primary-dark: #4F46E5;
+      --primary-glow: rgba(99, 102, 241, 0.25);
+      --accent: #22C55E;        /* Green — health, success */
+      --accent-glow: rgba(34, 197, 94, 0.2);
+
+      /* Semantic */
+      --destructive: #EF4444;
+      --warning: #F59E0B;
+      --info: #3B82F6;
+
+      /* Layout */
+      --radius: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --max-width: 1200px;
+    }
+
+    /* ═══════ RESET & BASE ═══════ */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      line-height: 1.6;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ═══════ AMBIENT BACKGROUND ═══════ */
+    .ambient {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .ambient .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); opacity: 0.08;
+      animation: drift 25s ease-in-out infinite;
+    }
+    .orb-1 {
+      width: 500px; height: 500px; top: -150px; left: -100px;
+      background: var(--primary);
+    }
+    .orb-2 {
+      width: 400px; height: 400px; top: 40%; right: -120px;
+      background: var(--accent);
+      animation-delay: -8s; animation-duration: 30s;
+    }
+    .orb-3 {
+      width: 350px; height: 350px; bottom: 5%; left: 30%;
+      background: var(--info);
+      animation-delay: -16s; animation-duration: 28s;
+    }
+    @keyframes drift {
+      0%, 100% { transform: translate(0, 0); }
+      33% { transform: translate(25px, -30px); }
+      66% { transform: translate(-15px, 20px); }
+    }
+
+    .grid-bg {
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(99, 102, 241, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99, 102, 241, 0.02) 1px, transparent 1px);
+      background-size: 64px 64px;
+      pointer-events: none; z-index: 0;
+    }
+
+    .page { position: relative; z-index: 1; }
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+
+    /* ═══════ TYPOGRAPHY ═══════ */
+    h1, h2, h3, h4 { font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; }
+    h1 { font-size: clamp(2.5rem, 5vw, 3.8rem); font-weight: 800; letter-spacing: -0.03em; }
+    h2 { font-size: clamp(1.8rem, 3vw, 2.5rem); }
+    h3 { font-size: 1.15rem; }
+    .mono { font-family: 'Fira Code', 'SF Mono', monospace; }
+    .gradient-text {
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .section-label {
+      font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--primary-light); margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-label::before {
+      content: ''; width: 16px; height: 2px; background: var(--primary);
+      border-radius: 1px;
+    }
+    .section-desc {
+      font-size: 1.05rem; color: var(--text-secondary);
+      max-width: 540px; margin-bottom: 48px; line-height: 1.7;
+    }
+
+    /* ═══════ NAV ═══════ */
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 100;
+      background: rgba(8, 14, 30, 0.8);
+      backdrop-filter: blur(16px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+    }
+    nav .container {
+      display: flex; justify-content: space-between; align-items: center;
+      height: 64px;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.15rem; }
+    .logo-mark {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: grid; place-items: center;
+      box-shadow: 0 0 16px var(--primary-glow);
+    }
+    .logo-mark svg { color: #fff; }
+    .nav-links { display: flex; align-items: center; gap: 28px; }
+    .nav-links a {
+      color: var(--text-muted); text-decoration: none; font-size: 0.875rem;
+      font-weight: 500; transition: color 0.2s; cursor: pointer;
+    }
+    .nav-links a:hover, .nav-links a:focus-visible { color: var(--text-primary); }
+    .nav-links a:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; border-radius: 4px; }
+
+    /* ═══════ BUTTONS ═══════ */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border-radius: var(--radius); font-size: 0.9rem;
+      font-weight: 600; text-decoration: none; border: none;
+      cursor: pointer; transition: all 0.2s ease; font-family: inherit;
+      line-height: 1.4;
+    }
+    .btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+    .btn-primary {
+      background: var(--primary); color: #fff;
+      box-shadow: 0 2px 16px var(--primary-glow);
+    }
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      box-shadow: 0 4px 24px var(--primary-glow);
+      transform: translateY(-1px);
+    }
+    .btn-ghost {
+      background: transparent; color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--border-hover); color: var(--text-primary); background: rgba(255,255,255,0.02); }
+
+    /* ═══════ HERO ═══════ */
+    .hero {
+      min-height: 100vh; display: flex; align-items: center;
+      padding: 120px 0 80px;
+    }
+    .hero .container { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 5px 14px 5px 6px; border-radius: 99px;
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      font-size: 0.78rem; font-weight: 500; color: var(--primary-light);
+      margin-bottom: 24px;
+    }
+    .badge-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--accent); animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .hero h1 { margin-bottom: 20px; }
+    .hero p { font-size: 1.1rem; color: var(--text-secondary); max-width: 480px; margin-bottom: 32px; line-height: 1.75; }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    /* ═══════ HERO TERMINAL ═══════ */
+    .terminal {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.4), 0 0 48px var(--primary-glow);
+    }
+    .terminal-bar {
+      padding: 12px 16px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .terminal-dot--r { background: #EF4444; }
+    .terminal-dot--y { background: #F59E0B; }
+    .terminal-dot--g { background: #22C55E; }
+    .terminal-title { margin-left: 8px; font-size: 0.75rem; color: var(--text-muted); font-family: 'Fira Code', monospace; }
+    .terminal-body {
+      padding: 20px; font-family: 'Fira Code', monospace; font-size: 0.8rem;
+      line-height: 1.8; color: var(--text-secondary);
+    }
+    .terminal-line { opacity: 0; animation: reveal 0.25s ease forwards; }
+    .t-comment { color: var(--text-muted); }
+    .t-keyword { color: var(--primary-light); }
+    .t-string { color: var(--accent); }
+    .t-fn { color: #60A5FA; }
+    .t-num { color: #F59E0B; }
+    @keyframes reveal { to { opacity: 1; } }
+
+    .terminal-score {
+      margin: 16px 20px 20px;
+      padding: 14px 18px; border-radius: var(--radius);
+      background: rgba(34, 197, 94, 0.06);
+      border: 1px solid rgba(34, 197, 94, 0.12);
+      display: flex; align-items: center; gap: 14px;
+    }
+    .score-ring {
+      width: 52px; height: 52px; border-radius: 50%;
+      border: 3px solid var(--accent);
+      display: grid; place-items: center;
+      font-size: 1.1rem; font-weight: 800; color: var(--accent);
+      font-family: 'Inter', sans-serif;
+    }
+    .score-meta { font-size: 0.78rem; }
+    .score-meta strong { color: var(--text-primary); font-size: 0.85rem; }
+
+    /* ═══════ METRICS BAR ═══════ */
+    .metrics {
+      padding: 36px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .metrics-row {
+      display: flex; justify-content: center; gap: 56px; flex-wrap: wrap;
+    }
+    .metric { text-align: center; }
+    .metric-val {
+      font-size: 1.6rem; font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-light), var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .metric-label { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ═══════ SCAN BOX ═══════ */
+    .scan-section { padding: 72px 0; }
+    .scan-card {
+      max-width: 620px; margin: 0 auto;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius-xl); padding: 36px;
+      position: relative; overflow: hidden;
+    }
+    .scan-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    }
+    .scan-card h3 { font-size: 1.25rem; margin-bottom: 6px; }
+    .scan-card .sub { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px; }
+    .input-row { display: flex; gap: 10px; margin-bottom: 12px; }
+    .input-row input {
+      flex: 1; padding: 12px 16px; border-radius: var(--radius);
+      border: 1px solid var(--border); background: var(--bg);
+      color: var(--text-primary); font-size: 0.9rem; font-family: inherit;
+      outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .input-row input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
+    .input-row input::placeholder { color: var(--text-muted); }
+    .scan-note { font-size: 0.75rem; color: var(--text-muted); }
+
+    /* Waitlist */
+    .waitlist { display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
+    .waitlist.show { display: block; }
+    .waitlist p { font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 12px; }
+    .waitlist-ok { color: var(--accent); font-weight: 600; margin-top: 10px; display: none; }
+
+    /* ═══════ FEATURES ═══════ */
+    .features { padding: 96px 0; }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .f-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 28px;
+      transition: all 0.2s ease; cursor: default;
+    }
+    .f-card:hover { border-color: var(--border-hover); transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.25); }
+    .f-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: grid; place-items: center; margin-bottom: 16px;
+    }
+    .f-icon svg { width: 20px; height: 20px; }
+    .f-icon--shield { background: rgba(239,68,68,0.08); color: #EF4444; border: 1px solid rgba(239,68,68,0.12); }
+    .f-icon--chart { background: rgba(99,102,241,0.08); color: var(--primary-light); border: 1px solid rgba(99,102,241,0.12); }
+    .f-icon--package { background: rgba(245,158,11,0.08); color: #F59E0B; border: 1px solid rgba(245,158,11,0.12); }
+    .f-icon--flask { background: rgba(34,197,94,0.08); color: #22C55E; border: 1px solid rgba(34,197,94,0.12); }
+    .f-icon--clipboard { background: rgba(59,130,246,0.08); color: #3B82F6; border: 1px solid rgba(59,130,246,0.12); }
+    .f-icon--file { background: rgba(249,115,22,0.08); color: #F97316; border: 1px solid rgba(249,115,22,0.12); }
+    .f-card h3 { margin-bottom: 8px; }
+    .f-card p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.65; }
+
+    /* ═══════ STEPS ═══════ */
+    .steps-section { padding: 96px 0; }
+    .steps-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+      margin-top: 48px; position: relative;
+    }
+    .steps-grid::before {
+      content: ''; position: absolute; top: 36px; left: 16%; right: 16%;
+      height: 1px; background: linear-gradient(90deg, var(--primary), var(--accent));
+      opacity: 0.15;
+    }
+    .step { text-align: center; }
+    .step-num {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--primary); color: #fff;
+      display: grid; place-items: center; margin: 0 auto 18px;
+      font-size: 1.2rem; font-weight: 800;
+      box-shadow: 0 0 24px var(--primary-glow);
+    }
+    .step h3 { margin-bottom: 8px; }
+    .step p { font-size: 0.88rem; color: var(--text-secondary); max-width: 260px; margin: 0 auto; line-height: 1.65; }
+
+    /* ═══════ SHOWCASE IMAGE ═══════ */
+    .showcase { padding: 48px 0; }
+    .showcase-wrap {
+      position: relative; border-radius: var(--radius-lg); overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 32px 64px rgba(0,0,0,0.3);
+    }
+    .showcase-wrap img {
+      width: 100%; height: 320px; object-fit: cover;
+      filter: brightness(0.45) saturate(1.3);
+    }
+    .showcase-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(8,14,30,0.2) 0%, rgba(8,14,30,0.85) 100%);
+      display: grid; place-items: center; padding: 32px;
+    }
+    .showcase-overlay blockquote {
+      max-width: 560px; text-align: center;
+      font-size: 1.25rem; font-weight: 500; line-height: 1.6;
+      font-style: italic;
+    }
+    .showcase-overlay cite {
+      display: block; margin-top: 14px; font-size: 0.82rem;
+      color: var(--text-muted); font-style: normal; font-weight: 400;
+    }
+
+    /* ═══════ PRICING ═══════ */
+    .pricing { padding: 96px 0; }
+    .pricing-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+      max-width: 940px; margin: 0 auto;
+    }
+    .p-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius-xl); padding: 32px;
+      text-align: center; transition: all 0.2s; position: relative;
+    }
+    .p-card.pop {
+      border-color: var(--primary);
+      box-shadow: 0 0 32px var(--primary-glow);
+      transform: scale(1.02);
+    }
+    .p-card.pop::before {
+      content: 'Most Popular'; position: absolute; top: -11px; left: 50%;
+      transform: translateX(-50%); padding: 3px 14px; border-radius: 99px;
+      background: var(--primary); font-size: 0.68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .p-card:hover { transform: translateY(-3px); }
+    .p-card.pop:hover { transform: scale(1.02) translateY(-3px); }
+    .p-tier { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); }
+    .p-price { font-size: 2.8rem; font-weight: 900; margin: 8px 0 4px; letter-spacing: -0.03em; }
+    .p-price span { font-size: 0.9rem; font-weight: 400; color: var(--text-muted); }
+    .p-desc { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 24px; }
+    .p-list { list-style: none; text-align: left; margin-bottom: 24px; }
+    .p-list li {
+      padding: 7px 0; font-size: 0.88rem; color: var(--text-secondary);
+      display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid rgba(71,85,105,0.15);
+    }
+    .p-list li svg { width: 16px; height: 16px; color: var(--accent); flex-shrink: 0; }
+
+    /* ═══════ COMPARISON ═══════ */
+    .comparison { padding: 72px 0; }
+    .comp-wrap {
+      max-width: 760px; margin: 48px auto 0;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+    }
+    .comp-row {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      padding: 14px 24px; border-bottom: 1px solid rgba(71,85,105,0.15);
+      font-size: 0.88rem; align-items: center;
+    }
+    .comp-row:last-child { border-bottom: none; }
+    .comp-row.hd {
+      background: rgba(99,102,241,0.04);
+      font-weight: 600; font-size: 0.75rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text-muted);
+    }
+    .comp-row.hd .us { color: var(--primary-light); }
+    .cc { text-align: center; color: var(--text-muted); }
+    .cc.label { text-align: left; color: var(--text-secondary); font-weight: 500; }
+    .cc.us { color: var(--accent); font-weight: 600; }
+    .cc .x { opacity: 0.4; }
+
+    /* ═══════ CTA ═══════ */
+    .final-cta { padding: 112px 0; text-align: center; position: relative; }
+    .final-cta::before {
+      content: ''; position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%); width: 500px; height: 500px;
+      border-radius: 50%; background: radial-gradient(circle, var(--primary-glow), transparent 70%);
+      filter: blur(60px); pointer-events: none;
+    }
+    .final-cta h2, .final-cta p, .final-cta .btn { position: relative; }
+    .final-cta p { font-size: 1.05rem; color: var(--text-secondary); max-width: 460px; margin: 12px auto 32px; }
+
+    /* ═══════ FOOTER ═══════ */
+    footer {
+      padding: 32px 0; border-top: 1px solid var(--border);
+      text-align: center; font-size: 0.78rem; color: var(--text-muted);
+    }
+    footer a { color: var(--primary-light); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ═══════ SCROLL REVEAL ═══════ */
+    .sr { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .sr.vis { opacity: 1; transform: translateY(0); }
+
+    /* ═══════ RESPONSIVE ═══════ */
+    @media (max-width: 1024px) {
+      .hero .container { grid-template-columns: 1fr; }
+      .terminal { max-width: 520px; }
+    }
+    @media (max-width: 768px) {
+      .features-grid, .pricing-grid, .steps-grid { grid-template-columns: 1fr; }
+      .nav-links a:not(.btn) { display: none; }
+      .comp-row { grid-template-columns: 1.4fr 1fr 1fr 1fr; font-size: 0.8rem; padding: 12px 16px; }
+      .metrics-row { gap: 32px; }
+      .steps-grid::before { display: none; }
+      .p-card.pop { transform: none; }
+      .p-card.pop:hover { transform: translateY(-3px); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="ambient">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+<div class="grid-bg"></div>
+
+<div class="page">
+
+<!-- NAV -->
+<nav>
+  <div class="container">
+    <div class="logo">
+      <div class="logo-mark"><i data-lucide="scan-search" style="width:18px;height:18px;color:#fff"></i></div>
+      Code<span style="color:var(--accent)">Health</span>
+    </div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#how">How It Works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#scan" class="btn btn-primary" style="padding:8px 18px;font-size:0.82rem;">Try Free Scan</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div>
+      <div class="hero-badge">
+        <div class="badge-dot"></div>
+        AI-Powered Codebase Audits
+      </div>
+      <h1>Know your code's<br><span class="gradient-text">true health</span></h1>
+      <p>Submit any GitHub repo. Get a professional security, quality, and compliance audit delivered as a PDF in under 60 seconds. No setup. No config.</p>
+      <div class="hero-actions">
+        <a href="#scan" class="btn btn-primary"><i data-lucide="scan" style="width:16px;height:16px"></i> Start Free Scan</a>
+        <a href="#how" class="btn btn-ghost"><i data-lucide="play" style="width:16px;height:16px"></i> See How It Works</a>
+      </div>
+    </div>
+
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div class="terminal-dot terminal-dot--r"></div>
+        <div class="terminal-dot terminal-dot--y"></div>
+        <div class="terminal-dot terminal-dot--g"></div>
+        <span class="terminal-title">codehealth-scan.ts</span>
+      </div>
+      <div class="terminal-body">
+        <div class="terminal-line" style="animation-delay:.1s"><span class="t-comment">// CodeHealth — AI Codebase Audit</span></div>
+        <div class="terminal-line" style="animation-delay:.3s"><span class="t-keyword">import</span> { scan } <span class="t-keyword">from</span> <span class="t-string">'@codehealth/core'</span></div>
+        <div class="terminal-line" style="animation-delay:.5s">&nbsp;</div>
+        <div class="terminal-line" style="animation-delay:.7s"><span class="t-keyword">const</span> report = <span class="t-keyword">await</span> <span class="t-fn">scan</span>({</div>
+        <div class="terminal-line" style="animation-delay:.9s">&nbsp;&nbsp;repo: <span class="t-string">'github.com/your/repo'</span>,</div>
+        <div class="terminal-line" style="animation-delay:1.1s">&nbsp;&nbsp;checks: [<span class="t-string">'security'</span>, <span class="t-string">'quality'</span>,</div>
+        <div class="terminal-line" style="animation-delay:1.3s">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="t-string">'deps'</span>, <span class="t-string">'compliance'</span>]</div>
+        <div class="terminal-line" style="animation-delay:1.5s">})</div>
+        <div class="terminal-line" style="animation-delay:1.7s">&nbsp;</div>
+        <div class="terminal-line" style="animation-delay:1.9s"><span class="t-comment">// Score: 87/100 — Grade A</span></div>
+        <div class="terminal-line" style="animation-delay:2.1s"><span class="t-comment">// 0 critical · 3 medium · PDF ready ✓</span></div>
+      </div>
+      <div class="terminal-score">
+        <div class="score-ring">87</div>
+        <div class="score-meta">
+          <strong>Grade A — Low Risk</strong><br>
+          <span style="color:var(--text-muted)">6 dimensions scanned in 1.2s</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METRICS -->
+<section class="metrics">
+  <div class="container">
+    <div class="metrics-row">
+      <div class="metric"><div class="metric-val">6</div><div class="metric-label">Audit Dimensions</div></div>
+      <div class="metric"><div class="metric-val">&lt;60s</div><div class="metric-label">Average Scan Time</div></div>
+      <div class="metric"><div class="metric-val">7-Page</div><div class="metric-label">PDF Report</div></div>
+      <div class="metric"><div class="metric-val">$0</div><div class="metric-label">To Get Started</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SCAN -->
+<section class="scan-section" id="scan">
+  <div class="container">
+    <div class="scan-card sr">
+      <h3>Scan Your Repository</h3>
+      <p class="sub">Paste a GitHub URL. Get your audit in under a minute.</p>
+      <div class="input-row">
+        <input type="text" id="repo-url" placeholder="https://github.com/owner/repo" aria-label="GitHub repository URL" />
+        <button class="btn btn-primary" onclick="startScan()" style="white-space:nowrap"><i data-lucide="search" style="width:16px;height:16px"></i> Scan</button>
+      </div>
+      <p class="scan-note">Free tier · 1 scan/month · Public repos · No credit card</p>
+      <div class="waitlist" id="waitlist">
+        <p>We're in private beta. Join the waitlist for early access:</p>
+        <div class="input-row">
+          <input type="email" id="wl-email" placeholder="you@email.com" aria-label="Email for waitlist" />
+          <button class="btn btn-primary" onclick="joinWaitlist()" style="white-space:nowrap">Join</button>
+        </div>
+        <p class="waitlist-ok" id="wl-ok">You're on the list. We'll reach out soon.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-label">Capabilities</div>
+    <h2>Six dimensions of code health</h2>
+    <p class="section-desc">Every scan provides a comprehensive picture — from vulnerability detection to regulatory compliance.</p>
+    <div class="features-grid">
+      <div class="f-card sr">
+        <div class="f-icon f-icon--shield"><i data-lucide="shield-alert"></i></div>
+        <h3>Security Analysis</h3>
+        <p>Detect vulnerabilities, injection risks, exposed secrets, and unsafe patterns. OWASP-aligned severity ratings.</p>
+      </div>
+      <div class="f-card sr">
+        <div class="f-icon f-icon--chart"><i data-lucide="bar-chart-3"></i></div>
+        <h3>Code Quality</h3>
+        <p>Health score, complexity analysis, anti-pattern detection, debug leaks, and deep nesting with a letter grade.</p>
+      </div>
+      <div class="f-card sr">
+        <div class="f-icon f-icon--package"><i data-lucide="package"></i></div>
+        <h3>Dependency Audit</h3>
+        <p>Outdated packages, deprecated libraries, known CVEs, and license compatibility surfaced instantly.</p>
+      </div>
+      <div class="f-card sr">
+        <div class="f-icon f-icon--flask"><i data-lucide="flask-conical"></i></div>
+        <h3>Test Coverage</h3>
+        <p>Map tested vs untested files. Know exactly where your safety nets are missing before production.</p>
+      </div>
+      <div class="f-card sr">
+        <div class="f-icon f-icon--clipboard"><i data-lucide="clipboard-check"></i></div>
+        <h3>Compliance Check</h3>
+        <p>GDPR, HIPAA, PCI-DSS, SOC 2 readiness assessment with plain-English findings and remediation steps.</p>
+      </div>
+      <div class="f-card sr">
+        <div class="f-icon f-icon--file"><i data-lucide="file-text"></i></div>
+        <h3>PDF Reports</h3>
+        <p>Professional audit reports ready to share with clients, investors, or leadership. White-label on Agency plans.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="steps-section" id="how">
+  <div class="container" style="text-align:center">
+    <div class="section-label" style="justify-content:center">Workflow</div>
+    <h2>Three steps. Sixty seconds.</h2>
+    <p class="section-desc" style="margin-left:auto;margin-right:auto">No configuration files. No CI pipeline. No DevOps expertise.</p>
+    <div class="steps-grid">
+      <div class="step sr">
+        <div class="step-num">1</div>
+        <h3>Paste Your Repo</h3>
+        <p>Enter any public or private GitHub repository URL into the scan form.</p>
+      </div>
+      <div class="step sr">
+        <div class="step-num">2</div>
+        <h3>AI Scans It</h3>
+        <p>Six analysis engines examine your code simultaneously across all dimensions.</p>
+      </div>
+      <div class="step sr">
+        <div class="step-num">3</div>
+        <h3>Get Your Report</h3>
+        <p>Download a professional multi-page PDF with scores, findings, and recommendations.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SHOWCASE -->
+<section class="showcase">
+  <div class="container">
+    <div class="showcase-wrap sr">
+      <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&q=80" alt="Abstract cybersecurity technology visualization" loading="lazy" width="1200" height="320" />
+      <div class="showcase-overlay">
+        <blockquote>
+          "Security is the #1 developer concern — yet 72% of small businesses lack proper code audit tools."
+          <cite>— 2025 Developer Survey &amp; Reveal Report</cite>
+        </blockquote>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="container" style="text-align:center">
+    <div class="section-label" style="justify-content:center">Pricing</div>
+    <h2>Invest in your code's health</h2>
+    <p class="section-desc" style="margin-left:auto;margin-right:auto">Start free. Scale when you need more. Cancel anytime.</p>
+    <div class="pricing-grid">
+      <div class="p-card sr">
+        <div class="p-tier">Free</div>
+        <div class="p-price">$0<span>/mo</span></div>
+        <p class="p-desc">For individual developers</p>
+        <ul class="p-list">
+          <li><i data-lucide="check"></i> 1 repo scan per month</li>
+          <li><i data-lucide="check"></i> Public repos only</li>
+          <li><i data-lucide="check"></i> Basic quality score</li>
+          <li><i data-lucide="check"></i> Web-only results</li>
+        </ul>
+        <a href="#scan" class="btn btn-ghost" style="width:100%;justify-content:center">Get Started</a>
+      </div>
+      <div class="p-card pop sr">
+        <div class="p-tier">Pro</div>
+        <div class="p-price">$29<span>/mo</span></div>
+        <p class="p-desc">For teams and freelancers</p>
+        <ul class="p-list">
+          <li><i data-lucide="check"></i> 10 repo scans per month</li>
+          <li><i data-lucide="check"></i> Private repos supported</li>
+          <li><i data-lucide="check"></i> Full 6-dimension audit</li>
+          <li><i data-lucide="check"></i> PDF report export</li>
+          <li><i data-lucide="check"></i> Scan history &amp; trends</li>
+        </ul>
+        <a href="#scan" class="btn btn-primary" style="width:100%;justify-content:center">Start Pro Trial</a>
+      </div>
+      <div class="p-card sr">
+        <div class="p-tier">Agency</div>
+        <div class="p-price">$99<span>/mo</span></div>
+        <p class="p-desc">For agencies and consultants</p>
+        <ul class="p-list">
+          <li><i data-lucide="check"></i> Unlimited scans</li>
+          <li><i data-lucide="check"></i> White-label PDF reports</li>
+          <li><i data-lucide="check"></i> Client portal access</li>
+          <li><i data-lucide="check"></i> Custom branding</li>
+          <li><i data-lucide="check"></i> Priority support</li>
+        </ul>
+        <a href="#scan" class="btn btn-ghost" style="width:100%;justify-content:center">Contact Sales</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section class="comparison" id="compare">
+  <div class="container" style="text-align:center">
+    <div class="section-label" style="justify-content:center">Why CodeHealth</div>
+    <h2>Built different</h2>
+    <div class="comp-wrap sr">
+      <div class="comp-row hd">
+        <div class="cc label"></div>
+        <div class="cc">SonarQube</div>
+        <div class="cc">Snyk</div>
+        <div class="cc us">CodeHealth</div>
+      </div>
+      <div class="comp-row"><div class="cc label">Setup time</div><div class="cc">Hours</div><div class="cc">30 min</div><div class="cc us">60 sec</div></div>
+      <div class="comp-row"><div class="cc label">Zero config</div><div class="cc"><span class="x">✗</span></div><div class="cc"><span class="x">✗</span></div><div class="cc us">✓</div></div>
+      <div class="comp-row"><div class="cc label">PDF reports</div><div class="cc"><span class="x">✗</span></div><div class="cc">Enterprise</div><div class="cc us">All plans</div></div>
+      <div class="comp-row"><div class="cc label">White-label</div><div class="cc"><span class="x">✗</span></div><div class="cc"><span class="x">✗</span></div><div class="cc us">Agency</div></div>
+      <div class="comp-row"><div class="cc label">Compliance</div><div class="cc">Limited</div><div class="cc">Limited</div><div class="cc us">Full</div></div>
+      <div class="comp-row"><div class="cc label">Starting price</div><div class="cc">$150/mo</div><div class="cc">$599/mo</div><div class="cc us">Free</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="container">
+    <h2>Ready to audit your code?</h2>
+    <p>Join developers who trust CodeHealth to keep their codebases secure, clean, and compliant.</p>
+    <a href="#scan" class="btn btn-primary"><i data-lucide="arrow-right" style="width:16px;height:16px"></i> Start Your Free Scan</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>&copy; 2026 <a href="https://versatechventures.com">Versatech Ventures</a>. CodeHealth is an AI-powered codebase audit service.</p>
+  </div>
+</footer>
+
+</div>
+
+<script>
+// Init Lucide icons
+lucide.createIcons();
+
+// Scroll reveal
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -32px 0px' });
+document.querySelectorAll('.sr').forEach(el => obs.observe(el));
+
+function startScan() {
+  const v = document.getElementById('repo-url').value;
+  if (!v || !v.includes('github.com')) {
+    document.getElementById('repo-url').style.borderColor = 'var(--destructive)';
+    setTimeout(() => document.getElementById('repo-url').style.borderColor = '', 2000);
+    return;
+  }
+  document.getElementById('waitlist').classList.add('show');
+}
+function joinWaitlist() {
+  const e = document.getElementById('wl-email').value;
+  if (!e || !e.includes('@')) return;
+  document.getElementById('wl-ok').style.display = 'block';
+}
+</script>
+</body>
+</html>

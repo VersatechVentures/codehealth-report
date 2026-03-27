@@ -25,7 +25,7 @@ CodeHealth scans any public GitHub repository and generates a comprehensive heal
 
 - **6-Dimension Scanning** — Security, quality, dependencies, coverage, compliance, project structure
 - **PDF Reports** — Professional downloadable reports (Pro tier)
-- **Embeddable Badges** — `![CodeHealth](https://your-host/badge/owner/repo)`
+- **Embeddable Badges** — `![CodeHealth](https://www.versatechventures.com/badge/owner/repo)`
 - **Shareable Links** — Public report pages with OG metadata
 - **JWT Authentication** — Register/login with email, per-user scan limits
 - **SQLite Persistence** — Scan history and shared reports survive restarts
@@ -110,4 +110,10 @@ src/
 
 ## License
 
-[MIT](LICENSE) © Versatech Ventures
+[MIT](LICENSE) © [Versatech Ventures](https://www.versatechventures.com)
+
+## Contact
+
+📧 contact@versatechventures.com
+🌐 [www.versatechventures.com](https://www.versatechventures.com)
+🐙 [github.com/VersatechVentures](https://github.com/VersatechVentures)

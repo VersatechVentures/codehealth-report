@@ -38,6 +38,7 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },
-  "author": "Versatech Ventures",
+  "author": "Versatech Ventures <contact@versatechventures.com> (https://www.versatechventures.com)",
+  "homepage": "https://www.versatechventures.com",
   "license": "MIT"
 }

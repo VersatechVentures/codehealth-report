@@ -245,7 +245,7 @@ app.get("/api/report/:jobId", async (req, res) => {
 // ═══════════════════════════════════════════
 // FEATURE 1: BADGE ENDPOINT (Viral Loop)
 // GET /badge/:owner/:repo → Cached SVG badge
-// Embed: ![CodeHealth](https://codehealth.dev/badge/owner/repo)
+// Embed: ![CodeHealth](https://www.versatechventures.com/badge/owner/repo)
 // ═══════════════════════════════════════════
 
 function generateBadgeSvg(score: number, grade: string): string {

@@ -10,6 +10,7 @@ import { generatePDFReport } from "./reporter";
 import { ScanJob, ScanRequest, CodeHealthReport } from "./types";
 import { initDB, saveJob as dbSaveJob, getJob as dbGetJob, saveSharedReport as dbSaveShared, getSharedReport as dbGetShared, getUserById, incrementScanCount } from "./database";
 import { registerUser, loginUser, authenticateToken, optionalAuth } from "./auth";
+import { knowledgeBaseErrorHandler, captureDecision } from './knowledge';
 
 const app = express();
 
@@ -27,6 +28,7 @@ function isValidOwnerRepo(owner: string, repo: string): boolean {
   return valid.test(owner) && valid.test(repo) && !owner.includes('..') && !repo.includes('..');
 }
 const PORT = parseInt(process.env.PORT || "3500", 10);
+const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 // In-memory stores (MVP — replace with DB later)
 const jobs = new Map<string, ScanJob>();
@@ -458,6 +460,9 @@ app.get("/api/health", (_req, res) => {
 
 // Initialize database
 initDB();
+
+// Global error handler for knowledge capture MUST be last `app.use`
+app.use(knowledgeBaseErrorHandler);
 
 app.listen(PORT, () => {
   console.log(`\n🔬 CodeHealth Report v0.3.0 — Revenue Engine`);

@@ -324,7 +324,7 @@ export async function scanRepo(repoPath: string, repoUrl: string, profile: strin
 
   // Auto-capture to knowledge base (Phase 4)
   try {
-    captureScanResult(report);
+    captureScanResult(repoUrl, report);
   } catch (err: any) {
     console.log(`[Scanner] Knowledge capture failed (non-fatal): ${err.message}`);
   }

@@ -251,11 +251,11 @@ app.get("/api/report/:jobId", async (req, res) => {
 
 function generateBadgeSvg(score: number, grade: string): string {
   const gradeColors: Record<string, string> = {
-    A: "#22C55E", B: "#84CC16", C: "#F59E0B", D: "#F97316", F: "#EF4444",
+    A: "#22C55E", B: "#84CC16", C: "#F59E0B", D: "#F97316", F: "#EF4444", "N/A": "#64748B",
   };
   const color = gradeColors[grade] || "#64748B";
   const labelWidth = 72;
-  const valueText = `${score}/100 ${grade}`;
+  const valueText = grade === "N/A" ? "N/A — Minimal Repo" : `${score}/100 ${grade}`;
   const valueWidth = 8 * valueText.length + 16;
   const totalWidth = labelWidth + valueWidth;
 
@@ -365,7 +365,7 @@ app.get("/share/:shareId", (req, res) => {
 
   const r = shared.report;
   const gradeColors: Record<string, string> = {
-    A: "#22C55E", B: "#84CC16", C: "#F59E0B", D: "#F97316", F: "#EF4444",
+    A: "#22C55E", B: "#84CC16", C: "#F59E0B", D: "#F97316", F: "#EF4444", "N/A": "#64748B",
   };
   const gradeColor = gradeColors[r.summary.grade] || "#64748B";
 

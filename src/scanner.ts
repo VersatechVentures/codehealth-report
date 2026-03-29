@@ -108,9 +108,14 @@ async function callTool(tool: string, args: Record<string, any> = {}): Promise<s
 // SCORE EXTRACTION
 // ═══════════════════════════════════════════
 
-function extractScore(raw: string, label: string): number {
+function extractScore(raw: string, label: string): { value: number; parsed: boolean } {
   const match = raw.match(new RegExp(`${label}[:\\s]*(\\d+)\\/100`));
-  return match ? parseInt(match[1], 10) : 50;
+  return match ? { value: parseInt(match[1], 10), parsed: true } : { value: 50, parsed: false };
+}
+
+function isMinimalRepo(scores: { parsed: boolean }[]): boolean {
+  const unparsed = scores.filter(s => !s.parsed).length;
+  return unparsed >= 4; // 4+ of 5 dimensions couldn't extract a real score
 }
 
 // ═══════════════════════════════════════════
@@ -135,7 +140,9 @@ function generateExecutiveSummary(
     counts.low > 0 ? `${counts.low} low` : null,
   ].filter(Boolean).join(", ");
 
-  const headline = severityLine
+  const headline = grade === "N/A"
+    ? `Minimal repository — insufficient code for meaningful analysis`
+    : severityLine
     ? `${total} findings detected (${severityLine}) — Score: ${score}/100`
     : `No findings detected in scanned areas — ${score}/100`;
 
@@ -276,23 +283,41 @@ export async function scanRepo(repoPath: string, repoUrl: string, profile: strin
   const complianceRaw = extract(complianceResult);
 
   // Weighted scoring with configurable profile (Condition 1)
-  const secScore = extractScore(securityRaw, "Security Score");
-  const depScore = extractScore(depsRaw, "Dependency Health");
-  const qualScore = extractScore(qualityRaw, "Health Score");
-  const covScore = extractScore(coverageRaw, "Test Quality Score");
-  const compScore = extractScore(complianceRaw, "Compliance Score");
+  const secResult = extractScore(securityRaw, "Security Score");
+  const depResult = extractScore(depsRaw, "Dependency Health");
+  const qualResult = extractScore(qualityRaw, "Health Score");
+  const covResult = extractScore(coverageRaw, "Test Quality Score");
+  const compResult = extractScore(complianceRaw, "Compliance Score");
 
-  const overallScore = Math.round(
-    secScore * weights.security +
-    depScore * weights.dependencies +
-    qualScore * weights.quality +
-    covScore * weights.coverage +
-    compScore * weights.compliance
-  );
+  const secScore = secResult.value;
+  const depScore = depResult.value;
+  const qualScore = qualResult.value;
+  const covScore = covResult.value;
+  const compScore = compResult.value;
 
-  const grade = overallScore >= 90 ? "A" : overallScore >= 75 ? "B" : overallScore >= 60 ? "C" : overallScore >= 40 ? "D" : "F";
-  const riskLevel: CodeHealthReport["summary"]["riskLevel"] =
-    overallScore >= 80 ? "low" : overallScore >= 60 ? "medium" : overallScore >= 40 ? "high" : "critical";
+  const minimal = isMinimalRepo([secResult, depResult, qualResult, covResult, compResult]);
+
+  let overallScore: number;
+  let grade: string;
+  let riskLevel: CodeHealthReport["summary"]["riskLevel"];
+
+  if (minimal) {
+    // Minimal repos (Hello-World, READMEs, etc.) get N/A-equivalent: neutral score
+    overallScore = 0;
+    grade = "N/A";
+    riskLevel = "low";
+    console.log(`[Scanner] Minimal repo detected — insufficient code for meaningful analysis`);
+  } else {
+    overallScore = Math.round(
+      secScore * weights.security +
+      depScore * weights.dependencies +
+      qualScore * weights.quality +
+      covScore * weights.coverage +
+      compScore * weights.compliance
+    );
+    grade = overallScore >= 90 ? "A" : overallScore >= 75 ? "B" : overallScore >= 60 ? "C" : overallScore >= 40 ? "D" : "F";
+    riskLevel = overallScore >= 80 ? "low" : overallScore >= 60 ? "medium" : overallScore >= 40 ? "high" : "critical";
+  }
 
   // Group findings using CWE/OWASP taxonomy
   const groupedFindings = groupFindings(securityRaw, depsRaw, qualityRaw, complianceRaw);
